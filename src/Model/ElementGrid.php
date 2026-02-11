@@ -9,13 +9,14 @@ use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\DropdownField;
 
+
 /**
  * @property int $ElementsID
  * @method ElementalArea Elements()
  */
 class ElementGrid extends BaseElement
 {
-    private static string $icon = 'font-icon-thumbnails';
+    private static string $icon = 'font-icon-block-layout-5';
 
     private static array $db = [
         // Slashes are fine in Enum items. Default to full.
@@ -58,7 +59,7 @@ class ElementGrid extends BaseElement
 
     public function getType(): string
     {
-        return _t(__CLASS__ . '.BlockType', 'Grid');
+        return _t(__CLASS__ . '.BlockType', 'Variable Width Grid');
     }
 
     /**
@@ -72,18 +73,22 @@ class ElementGrid extends BaseElement
         return 'Contains ' . $count . ' ' . $suffix;
     }
 
-    public function updateCMSFields(FieldList $fields): void
+    public function getCMSFields(): FieldList
     {
+        $fields = parent::getCMSFields();
+
         $fields->findOrMakeTab('Root.Settings', 'Settings');
+
         $fields->addFieldToTab(
             'Root.Settings',
-            DropdownField::create('VerticalAlign', 'Vertical Alignment')
-                ->setSource([
-                    'top' => 'Top',
-                    'middle' => 'Middle',
-                    'bottom' => 'Bottom',
-                ])->setEmptyString( '- Choose Vertical Alignment -')
+            DropdownField::create('VerticalAlign', 'Vertical Alignment', [
+                'top' => 'Top',
+                'middle' => 'Middle',
+                'bottom' => 'Bottom',
+            ])
         );
+
+        return $fields;
     }
 
     /**
