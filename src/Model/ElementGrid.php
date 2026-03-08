@@ -19,7 +19,6 @@ class ElementGrid extends BaseElement
     private static string $icon = 'font-icon-block-layout-5';
 
     private static array $db = [
-        // Slashes are fine in Enum items. Default to full.
         'VerticalAlign' => "Enum('top,middle,bottom','middle')",
     ];
 
@@ -28,73 +27,64 @@ class ElementGrid extends BaseElement
     ];
 
     private static array $has_one = [
-        'Elements' => ElementalArea::class
+        'Elements' => ElementalArea::class,
     ];
 
     private static array $owns = [
-        'Elements'
+        'Elements',
     ];
 
     private static array $cascade_deletes = [
-        'Elements'
+        'Elements',
     ];
 
     private static array $cascade_duplicates = [
-        'Elements'
+        'Elements',
     ];
 
     private static array $extensions = [
-        ElementalAreasExtension::class
+        ElementalAreasExtension::class,
     ];
 
     private static string $table_name = 'ElementGrid';
-
-    private static string $title = 'Group';
-
-    private static string $description = 'Orderable grid of elements';
 
     private static string $singular_name = 'grid';
 
     private static string $plural_name = 'grids';
 
+    private static string $description = 'Orderable grid of elements';
+
     public function getType(): string
     {
-        return _t(__CLASS__ . '.BlockType', 'Variable Width Grid');
+        return _t(__CLASS__ . '.BlockType', 'Variable Column Grid');
     }
 
-    /**
-     * @return DBField
-     */
     public function getSummary(): string
     {
         $count = $this->Elements()->Elements()->Count();
-        $suffix = $count === 1 ? 'element': 'elements';
+        $suffix = $count === 1 ? 'element' : 'elements';
 
         return 'Contains ' . $count . ' ' . $suffix;
     }
 
-    public function getCMSFields(): FieldList
+    public function updateCMSFields(FieldList $fields): void
     {
-        $fields = parent::getCMSFields();
-
         $fields->findOrMakeTab('Root.Settings', 'Settings');
 
         $fields->addFieldToTab(
             'Root.Settings',
-            DropdownField::create('VerticalAlign', 'Vertical Alignment', [
-                'top' => 'Top',
-                'middle' => 'Middle',
-                'bottom' => 'Bottom',
-            ])
+            DropdownField::create('VerticalAlign', 'Vertical Alignment')
+                ->setSource([
+                    'top' => 'Top',
+                    'middle' => 'Middle',
+                    'bottom' => 'Bottom',
+                ])
+                ->setEmptyString('- Choose Vertical Alignment -')
         );
-
-        return $fields;
     }
 
     /**
-     * Retrieve a elemental area relation name which this element owns
-     *
-     * @return string
+     * Retrieve an elemental area relation name which this element owns
      */
     public function getOwnedAreaRelationName(): string
     {
@@ -116,8 +106,8 @@ class ElementGrid extends BaseElement
 
     public function VerticalAlignClass(): string
     {
-        return match ($this->owner->VerticalAlign) {
-            'top' => 'align-top',     
+        return match ($this->VerticalAlign) {
+            'top' => 'align-top',
             'middle' => 'align-middle',
             'bottom' => 'align-bottom',
             default => '',
