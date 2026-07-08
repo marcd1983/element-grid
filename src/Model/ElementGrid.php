@@ -6,8 +6,9 @@ use DNADesign\Elemental\Models\BaseElement;
 use DNADesign\Elemental\Models\ElementalArea;
 use DNADesign\Elemental\Extensions\ElementalAreasExtension;
 use SilverStripe\ORM\FieldType\DBField;
-use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\FieldList;
 
 
 /**
@@ -19,11 +20,15 @@ class ElementGrid extends BaseElement
     private static string $icon = 'font-icon-block-layout-5';
 
     private static array $db = [
-        'VerticalAlign' => "Enum('top,middle,bottom','middle')",
+        'VerticalAlign'  => "Enum('top,middle,bottom','middle')",
+        'HorizontalAlign' => "Enum('left,center,right,justify','left')",
+        'NoGridSpace'    => 'Boolean',
     ];
 
     private static array $defaults = [
-        'VerticalAlign' => 'middle',
+        'VerticalAlign'   => 'middle',
+        'HorizontalAlign' => 'left',
+        'NoGridSpace'     => false,
     ];
 
     private static array $has_one = [
@@ -67,20 +72,29 @@ class ElementGrid extends BaseElement
         return 'Contains ' . $count . ' ' . $suffix;
     }
 
-    public function updateCMSFields(FieldList $fields): void
+    public function getCMSFields(): FieldList
     {
+        $fields = parent::getCMSFields();
+
+        $fields->removeByName(['VerticalAlign', 'HorizontalAlign', 'NoGridSpace']);
         $fields->findOrMakeTab('Root.Settings', 'Settings');
 
-        $fields->addFieldToTab(
-            'Root.Settings',
-            DropdownField::create('VerticalAlign', 'Vertical Alignment')
-                ->setSource([
-                    'top' => 'Top',
-                    'middle' => 'Middle',
-                    'bottom' => 'Bottom',
-                ])
-                ->setEmptyString('- Choose Vertical Alignment -')
-        );
+        $fields->addFieldsToTab('Root.Settings', [
+            DropdownField::create('VerticalAlign', 'Vertical alignment', [
+                'top'    => 'Top',
+                'middle' => 'Middle',
+                'bottom' => 'Bottom',
+            ]),
+            DropdownField::create('HorizontalAlign', 'Horizontal alignment', [
+                'left'    => 'Left',
+                'center'  => 'Center',
+                'right'   => 'Right',
+                'justify' => 'Justify',
+            ]),
+            CheckboxField::create('NoGridSpace', 'Remove grid spacing (no gap between cells)'),
+        ]);
+
+        return $fields;
     }
 
     /**
@@ -107,10 +121,20 @@ class ElementGrid extends BaseElement
     public function VerticalAlignClass(): string
     {
         return match ($this->VerticalAlign) {
-            'top' => 'align-top',
+            'top'    => 'align-top',
             'middle' => 'align-middle',
             'bottom' => 'align-bottom',
-            default => '',
+            default  => '',
+        };
+    }
+
+    public function HorizontalAlignClass(): string
+    {
+        return match ($this->HorizontalAlign) {
+            'center'  => 'align-center',
+            'right'   => 'align-right',
+            'justify' => 'align-justify',
+            default   => '',
         };
     }
 }

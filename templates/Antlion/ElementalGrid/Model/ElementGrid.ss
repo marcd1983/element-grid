@@ -8,12 +8,11 @@
 				$Content
 			</div>
 	<% end_if %>
-<div class="cell element">
+
     <% if $Elements %>
-		<div class="grid-x grid-margin-x grid-margin-y {$Top.VerticalAlignClass}" data-listelement-count="$Elements.Elements.Count">
-			<% loop $Elements.Elements %>
-				<div class="cell {$WidthClass}">{$Me}</div>
+		<div class="element-grid grid-x <% if not $Top.NoGridSpace %>grid-margin-x grid-margin-y<% end_if %> {$Top.VerticalAlignClass} {$Top.HorizontalAlignClass}" data-listelement-count="$Elements.Elements.Count">
+			<% loop $Elements %>
+				{$Me}
 			<% end_loop %>
 		</div>
 	<% end_if %>
-</div>
