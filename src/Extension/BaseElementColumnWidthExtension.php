@@ -36,7 +36,7 @@ class BaseElementColumnWidthExtension extends Extension
         $isElementGridItself = ($owner instanceof ElementGrid);
 
         // Always remove any previous instance first
-        $fields->removeByName('Width', 'Padding', 'VerticalAlign');
+        $fields->removeByName(['Width', 'Padding', 'VerticalAlign']);
 
         if (!$isNestedUnderGrid || $isElementGridItself) {
             // If not nested under ElementGrid(or is the ElementGrid), hide the field
